@@ -2,7 +2,7 @@ import gzip
 import codecs
 from gensim.utils import tokenize
 from gensim.models.phrases import Phrases, Phraser
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec, FastText
 from time import time
 from os import listdir
 from os.path import exists, isdir, join
@@ -14,7 +14,7 @@ from collections import defaultdict
 class GzippedCorpusStreamer(object):
     def __init__(self, corpus_fpath):
         self._corpus_fpath = corpus_fpath
-        
+
     def __iter__(self):
         if isdir(self._corpus_fpath):
             for fname in listdir(self._corpus_fpath):
@@ -148,7 +148,7 @@ class PhraseDetector(object):
         tokens_with_phrases = self._add_dict_phrases(tokens)
 
         if self._restore_bigrams:
-           return self._restore_bigrams(tokens_with_phrases, tokens)
+            return self._restore_bigrams(tokens_with_phrases, tokens)
         else:
             return tokens_with_phrases
 
@@ -175,15 +175,13 @@ def detect_phrases(corpus_fpath, phrases_fpath, batch_size=500000):
 
         for s in pool.map(pd.add_phrases, s_batch): out.write("{}\n".format(" ".join(s)))
 
-
     pd.print_stats()
 
     return output_fpath
 
 
-def learn_word_embeddings(corpus_fpath, vectors_fpath, cbow, window, iter_num, size, threads,
+def learn_word_embeddings(corpus_fpath, vectors_fpath, fasttext, window, iter_num, size, threads,
                           min_count, detect_bigrams=True, phrases_fpath=""):
-
     tic = time()
 
     if exists(phrases_fpath):
@@ -193,7 +191,7 @@ def learn_word_embeddings(corpus_fpath, vectors_fpath, cbow, window, iter_num, s
         print("Time, sec.: {}".format(time() - tic))
 
     sentences = GzippedCorpusStreamer(corpus_fpath)
-    
+
     if detect_bigrams:
         print("Extracting bigrams from the corpus:", corpus_fpath)
 
@@ -203,15 +201,25 @@ def learn_word_embeddings(corpus_fpath, vectors_fpath, cbow, window, iter_num, s
         print("Time, sec.:", time() - tic)
 
     print("Training word vectors:", corpus_fpath)
-    model = Word2Vec(sentences,
-                     min_count=min_count,
-                     size=size,
-                     window=window, 
-                     max_vocab_size=None,
-                     workers=threads,
-                     sg=(1 if cbow == 0 else 0),
-                     iter=iter_num)
+    if fasttext == 0:
+        model = Word2Vec(sentences,
+                         min_count=min_count,
+                         size=size,
+                         window=window,
+                         max_vocab_size=None,
+                         workers=threads,
+                         sg=1,
+                         iter=iter_num)
+    else:
+        model = FastText(sentences,
+                         min_count=min_count,
+                         size=size,
+                         window=window,
+                         max_vocab_size=None,
+                         workers=threads,
+                         sg=1,
+                         iter=iter_num)
+
     model.wv.save_word2vec_format(vectors_fpath, binary=False)
     print("Vectors:", vectors_fpath)
-    print("Time, sec.:", time()-tic) 
-
+    print("Time, sec.:", time() - tic)
