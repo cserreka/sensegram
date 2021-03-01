@@ -60,8 +60,8 @@ def main():
     model_dir = "model/"
     ensure_dir(model_dir)
     vectors_fpath = join(model_dir,
-                         corpus_name + ".cbow{}-size{}-window{}-iter{}-mincount{}-bigrams{}.word_vectors".format(
-                             args.cbow, args.size, args.window, args.iter, args.min_count, args.bigrams))
+                         corpus_name + ".fasttext{}-size{}-window{}-iter{}-mincount{}-bigrams{}.word_vectors".format(
+                             args.fasttext, args.size, args.window, args.iter, args.min_count, args.bigrams))
     vectors_short_fpath = join(model_dir, corpus_name + ".word_vectors")
     neighbours_fpath = join(model_dir, corpus_name + ".N{}.graph".format(args.N))
     clusters_fpath = join(model_dir, corpus_name + ".n{}.clusters".format(args.n))
