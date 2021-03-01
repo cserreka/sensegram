@@ -1,3 +1,4 @@
+import chinese_whispers
 from chinese_whispers import chinese_whispers, aggregate_clusters
 from networkx import Graph
 from multiprocessing import Pool
@@ -14,6 +15,7 @@ verbose = True
 
 first_not_letter = re.compile(r"^[^a-z]",re.IGNORECASE)
 last_not_letter = re.compile(r"[^a-z]$", re.IGNORECASE)
+
 
 def minimize(word):
     word = word.strip().lower()
@@ -79,7 +81,7 @@ def ego_network_clustering(neighbors_fpath, clusters_fpath, max_related=300, num
                     ego_network.name,
                     sense_num,
                     ", ".join(
-                        ["{}:{:.4f}".format(n,w) for w, n in sorted([(ego_network.node[c_node]["weight"]/WEIGHT_COEF, c_node) for c_node in cluster], reverse=True)]
+                        ["{}:{:.4f}".format(n,w) for w, n in sorted([(ego_network.nodes[c_node]["weight"]/WEIGHT_COEF, c_node) for c_node in cluster], reverse=True)]
                         )))
                 sense_num += 1
     print("Clusters:", clusters_fpath)

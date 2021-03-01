@@ -33,8 +33,8 @@ def main():
                                                  'clustering of ego networks of semantically related terms.')
     parser.add_argument('train_corpus', help="Path to a training corpus in text form (can be .gz).")
     parser.add_argument('-phrases', help="Path to a file with extra vocabulary words, e.g. multiword expressions,"
-                                     "which should be included into the vocabulary of the model. Each "
-                                     "line of this text file should contain one word or phrase with no header.",
+                                         "which should be included into the vocabulary of the model. Each "
+                                         "line of this text file should contain one word or phrase with no header.",
                         default="")
     parser.add_argument('-cbow', help="Use the continuous bag of words model (default is 1, use 0 for the "
                                       "skip-gram model).", default=1, type=int)
@@ -59,15 +59,15 @@ def main():
     corpus_name = basename(args.train_corpus)
     model_dir = "model/"
     ensure_dir(model_dir)
-    vectors_fpath = join(model_dir, corpus_name + ".cbow{}-size{}-window{}-iter{}-mincount{}-bigrams{}.word_vectors".format(
-        args.cbow, args.size, args.window, args.iter, args.min_count, args.bigrams))
+    vectors_fpath = join(model_dir,
+                         corpus_name + ".cbow{}-size{}-window{}-iter{}-mincount{}-bigrams{}.word_vectors".format(
+                             args.cbow, args.size, args.window, args.iter, args.min_count, args.bigrams))
     vectors_short_fpath = join(model_dir, corpus_name + ".word_vectors")
     neighbours_fpath = join(model_dir, corpus_name + ".N{}.graph".format(args.N))
     clusters_fpath = join(model_dir, corpus_name + ".n{}.clusters".format(args.n))
     clusters_minsize_fpath = clusters_fpath + ".minsize" + str(args.min_size)  # clusters that satisfy min_size
     clusters_removed_fpath = clusters_minsize_fpath + ".removed"  # cluster that are smaller than min_size
 
-    
     if exists(vectors_fpath):
         print("Using existing vectors:", vectors_fpath)
     elif exists(vectors_short_fpath):
@@ -82,20 +82,20 @@ def main():
         compute_graph_of_related_words(vectors_fpath, neighbours_fpath, neighbors=args.N)
     else:
         print("Using existing neighbors:", neighbours_fpath)
-        
+
     if not exists(clusters_fpath):
         word_sense_induction(neighbours_fpath, clusters_fpath, args.n, args.threads)
     else:
-       print("Using existing clusters:", clusters_fpath)
-   
-    if not exists(clusters_minsize_fpath): 
+        print("Using existing clusters:", clusters_fpath)
+
+    if not exists(clusters_minsize_fpath):
         filter_clusters.run(clusters_fpath, clusters_minsize_fpath, args.min_size)
     else:
         print("Using existing filtered clusters:", clusters_minsize_fpath)
-    
+
     building_sense_embeddings(clusters_minsize_fpath, vectors_fpath)
 
-    if (args.make_pcz):
+    if args.make_pcz:
         # add isas
         isas_fpath = ""
         # in: clusters_minsize_fpath

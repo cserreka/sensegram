@@ -22,7 +22,7 @@ def load_stoplist():
 # load resources 
 _stop_words = load_stoplist()
 print("Loading spacy model...")
-_spacy = spacy.load('en')
+_spacy = spacy.load("en_core_web_sm")
 
 
 def get_stoplist():

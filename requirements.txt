@@ -1,3 +1,6 @@
+networkx
+scipy
+joblib
 requests
 clint
 bidict
