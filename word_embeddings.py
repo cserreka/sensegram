@@ -9,6 +9,7 @@ from os.path import exists, isdir, join
 from tqdm import tqdm
 from multiprocessing import cpu_count, Pool
 from collections import defaultdict
+import numpy as np
 
 
 class GzippedCorpusStreamer(object):
@@ -221,5 +222,15 @@ def learn_word_embeddings(corpus_fpath, vectors_fpath, fasttext, window, iter_nu
                          iter=iter_num)
 
     model.wv.save_word2vec_format(vectors_fpath, binary=False)
+
+    # context vectors:
+    f = open(vectors_fpath + '_covec', 'w')
+    words = list(model.wv.vocab)
+    f.write(f"{len(words)} {len(model.syn1neg[0])}\n")
+    for w in words:
+        f.write(f"{w} {' '.join([str(x) for x in np.around(model.syn1neg[model.wv.vocab[w].index], decimals=6)])} \n")
+    f.close()
+
     print("Vectors:", vectors_fpath)
+    print("Covectors:", vectors_fpath + '_covec' )
     print("Time, sec.:", time() - tic)
