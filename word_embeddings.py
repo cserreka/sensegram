@@ -181,7 +181,7 @@ def detect_phrases(corpus_fpath, phrases_fpath, batch_size=500000):
     return output_fpath
 
 
-def learn_word_embeddings(corpus_fpath, vectors_fpath, fasttext, window, iter_num, size, threads,
+def learn_word_embeddings(corpus_fpath, vectors_fpath, cbow, fasttext, window, iter_num, size, threads,
                           min_count, detect_bigrams=True, phrases_fpath=""):
     tic = time()
 
@@ -209,7 +209,7 @@ def learn_word_embeddings(corpus_fpath, vectors_fpath, fasttext, window, iter_nu
                          window=window,
                          max_vocab_size=None,
                          workers=threads,
-                         sg=1,
+                         sg=(1 if cbow == 0 else 0),
                          iter=iter_num)
     else:
         model = FastText(sentences,
@@ -218,7 +218,7 @@ def learn_word_embeddings(corpus_fpath, vectors_fpath, fasttext, window, iter_nu
                          window=window,
                          max_vocab_size=None,
                          workers=threads,
-                         sg=1,
+                         sg=(1 if cbow == 0 else 0),
                          iter=iter_num)
 
     model.wv.save_word2vec_format(vectors_fpath, binary=False)

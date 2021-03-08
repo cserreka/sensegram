@@ -36,6 +36,8 @@ def main():
                                          "which should be included into the vocabulary of the model. Each "
                                          "line of this text file should contain one word or phrase with no header.",
                         default="")
+    parser.add_argument('-cbow', help="Use the continuous bag of words model (default is 1, use 0 for the "
+                                      "skip-gram model).", default=1, type=int)
     parser.add_argument('-fasttext', help="Use FastText (default is 0 for word2vec skip-gram, use 1 for the "
                                           "FastText model).", default=0, choices=[0, 1], type=int)
     parser.add_argument('-size', help="Set size of word vectors (default is 300).", default=300, type=int)
@@ -74,7 +76,7 @@ def main():
         print("Using existing vectors:", vectors_short_fpath)
         vectors_fpath = vectors_short_fpath
     else:
-        learn_word_embeddings(args.train_corpus, vectors_fpath, args.fasttext, args.window,
+        learn_word_embeddings(args.train_corpus, vectors_fpath, args.cbow, args.fasttext, args.window,
                               args.iter, args.size, args.threads, args.min_count,
                               detect_bigrams=args.bigrams, phrases_fpath=args.phrases)
 
