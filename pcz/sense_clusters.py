@@ -5,9 +5,9 @@ from collections import defaultdict
 import pickle as pickle
 from utils.common import exists
 from utils.common import load_voc
-from utils.morph import get_stoplist
+# from utils.morph import get_stoplist
 from utils.patterns import re_spaced_numbers, re_norm_babel, re_norm_babel_dash, re_whitespaces2
-from utils.morph import lemmatize_word
+# from utils.morph import lemmatize_word
 
 
 SEP = "\t"
@@ -28,7 +28,7 @@ class SenseClusters(object):
 
         self._verbose = verbose
         self._normalized_bow = normalized_bow
-        self._stoplist = get_stoplist()
+        # self._stoplist = get_stoplist()
         self._normalize_sim = normalize_sim
 
         if len(voc) > 0:
@@ -117,7 +117,7 @@ class SenseClusters(object):
         return senses_num
 
     def _good_token(self, w):
-        return (w not in self._stoplist and
+        return (  # w not in self._stoplist and
                 not re_spaced_numbers.match(w))
 
     @property
@@ -165,10 +165,10 @@ class SenseClusters(object):
         res = {}
         for w in cluster_words:
             token = self.norm(w)
-            lemma = lemmatize_word(token)
-            if REMOVE_BOW_STOPWORDS and token in self._stoplist or lemma in self._stoplist: continue
+            # lemma = lemmatize_word(token)
+            # if REMOVE_BOW_STOPWORDS and token in self._stoplist or lemma in self._stoplist: continue
 
-            res[lemma] = cluster_words[w]
+            # res[lemma] = cluster_words[w]
             res[token] = cluster_words[w]
 
         return res
@@ -200,6 +200,7 @@ class SenseClusters(object):
     def _load(self, pcz_fpath, strip_dst_senses, load_sim):
         """ Loads a dict[word][sense] --> {"cluster": Counter(), "cluster_norm": Counter(), "isas": Counter()} """
 
+        global i
         senses = defaultdict(dict)
         normword2word = defaultdict(set)
         if not exists(pcz_fpath): return senses, normword2word
